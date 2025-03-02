@@ -56,8 +56,8 @@ class UserController(APIView):
         return self.user_service.get_users()
 
     @route(
-        "/",
-        methods=["POST", "OPTIONS"],
+        "/create",
+        methods=["POST"],
         status_code=201,
         response_model=None,
         summary="创建新用户",
@@ -77,7 +77,7 @@ class UserController(APIView):
         return None
 
     @route(
-        "/{user_id}",
+        "/info/{user_id}",
         methods=["GET"],
         response_model=User,
         summary="根据ID获取用户",
