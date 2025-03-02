@@ -1,0 +1,156 @@
+[MASTER]
+# Python支持的最低版本
+py-version = 3.9
+
+# 添加要在向导运行前加载的文件或目录的逗号分隔列表
+init-hook='import sys; sys.path.append(".")'
+
+# 忽略的文件或目录
+ignore=_version.py, .git, __pycache__, .venv, venv, dist, build
+
+# 并行执行线程数，0表示自动
+jobs=0
+
+# 不递归到子目录中
+recursive=yes
+
+# 扩展包白名单，这些包即使无法导入也不会引发警告
+extension-pkg-whitelist=pydantic
+
+[MESSAGES CONTROL]
+
+[FORMAT]
+# 最大行长度，超过此行长度将发出警告
+max-line-length=100
+
+[TYPECHECK]
+# 当类中只有属性而没有方法时不发出警告
+ignore-none=yes
+
+# 当找不到模块时抑制警告，方便使用C扩展
+ignore-on-opaque-inference=yes
+
+# 忽略检查的模块列表，通常是无法检查的扩展模块
+ignored-modules=
+    fastapi,
+    injector,
+    loguru,
+    pydantic,
+    sqlalchemy,
+    redis,
+    uvicorn,
+    yaml,
+    toml,
+    minio,
+    apscheduler,
+    setuptools_scm,
+    argon2,
+    openpyxl,
+    aiokafka,
+    starlette,
+    prometheus_client,
+    click,
+    jinja2,
+    dotenv,
+    pydantic_settings
+
+# 忽略导入错误的模块列表
+ignored-classes=
+    SQLAlchemy,
+    scoped_session
+
+[DESIGN]
+# 最大支持的参数数量
+max-args=20
+
+# 最大属性数量
+max-attributes=10
+
+# 最小公共方法数量
+min-public-methods=1
+
+# 最大公共方法数量
+max-public-methods=30
+
+# 最大返回语句数量
+max-returns=20
+
+# 最大分支数量
+max-branches=30
+
+# 最大语句数量
+max-statements=50
+
+# 最大继承深度
+max-parents=7
+
+# 最大嵌套块深度
+max-nested-blocks=5
+
+# 最大局部变量数量
+max-locals=20
+
+# 最大布尔表达式数量
+max-bool-expr=5
+
+[SIMILARITIES]
+# 相似行的最小长度
+min-similarity-lines=6
+
+# 忽略注释
+ignore-comments=yes
+
+# 忽略文档字符串
+ignore-docstrings=yes
+
+# 忽略导入
+ignore-imports=yes
+
+[BASIC]
+# 良好变量名正则表达式
+good-names=i,j,k,ex,Run,_,id,db,lg,fs,e,f,wb,ws,dt,s,h,q
+
+# 不检查的变量名
+no-docstring-rgx=^_
+
+# 类名正则表达式
+class-rgx=[a-zA-Z_][a-zA-Z0-9]+$
+
+# 方法名正则表达式 - 添加豁免特殊方法名
+method-rgx=((__.*__)|([a-z][a-z0-9_]{2,30})|([a-z][a-zA-Z0-9]{2,30}))$
+
+# 变量名正则表达式
+variable-rgx=[a-z_][a-z0-9_]{1,30}$
+
+# 常量名正则表达式
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+# 属性名正则表达式
+attr-rgx=[a-z_][a-z0-9_]{1,30}$
+
+# 参数名正则表达式
+argument-rgx=[a-z_][a-z0-9_]{1,30}$
+
+# 类属性名正则表达式
+class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+
+# 内联变量名正则表达式
+inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
+
+# 函数名正则表达式(允许snake_case和camelCase)
+function-rgx=(([a-z][a-z0-9_]{2,50})|([a-z][a-zA-Z0-9]{2,50}))$
+
+# 忽略过长的行(正则表达式)
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+
+[IMPORTS]
+# 不检查wildcard导入
+allow-wildcard-with-all=no
+
+[CLASSES]
+# 检查protected成员的访问
+check-protected-access-in-special-methods=no
+
+[EXCEPTIONS]
+# 重新抛出异常的参数名称列表
+overgeneral-exceptions=builtins.Exception
