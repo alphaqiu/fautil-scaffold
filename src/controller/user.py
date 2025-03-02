@@ -11,10 +11,12 @@ from injector import Binder, Module, inject, singleton
 from loguru import logger
 
 from src.core.cbv import APIView, route
+from src.core.setup import setup
 from src.model.user import User, UserCreate
 from src.service.user_protocol import UserServiceProtocol
 
 
+@setup()
 @singleton
 class UserController(APIView):
     """
@@ -135,4 +137,4 @@ class UserControllerModule(Module):
         参数:
             binder: 依赖注入绑定器
         """
-        binder.bind(UserController, to=UserController, scope=singleton)
+        binder.bind(UserController, scope=singleton)

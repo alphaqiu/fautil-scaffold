@@ -7,33 +7,13 @@ Web服务网关接口模块。
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from injector import Injector
 
-from src.controller.user import UserController, UserControllerModule
-from src.dao.impl.user import UserDaoModule
-from src.service.impl.user import UserServiceModule
-
-# 创建依赖注入容器
-injector = Injector([UserControllerModule(), UserDaoModule(), UserServiceModule()])
+from src.core.cbv import setup_cbv
+from src.core.setup import setup_modules
 
 app = FastAPI()
+setup_cbv(app, setup_modules(), prefix="/api")
 
-
-def add_routes(engine: FastAPI):
-    """
-    添加路由到FastAPI应用。
-
-    参数:
-        app: FastAPI应用实例
-
-    返回:
-        配置好路由的FastAPI应用实例
-    """
-    user_controller = injector.get(UserController)
-    user_controller.register(engine, prefix="/api")
-
-
-add_routes(app)
 # 添加CORS中间件
 app.add_middleware(
     CORSMiddleware,

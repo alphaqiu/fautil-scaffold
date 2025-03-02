@@ -9,7 +9,10 @@ import inspect
 from typing import Any, Callable, Dict, List, Optional, Set
 
 from fastapi import APIRouter, FastAPI, params
+from injector import Injector
 from loguru import logger
+
+from src.core.setup import get_registered_modules
 
 
 class route:
@@ -183,10 +186,6 @@ class APIView:
         is_registered: bool
             是否已注册到FastAPI应用，类属性
 
-    类方法：
-        setup(cls, app, injector, prefix):
-            创建视图实例并注册到FastAPI应用
-
     实例方法：
         register(self, app, prefix):
             注册视图到FastAPI应用
@@ -304,7 +303,7 @@ class APIView:
         router = APIRouter(**router_kwargs)
 
         # 注册路由
-        self._register_routes(router, full_prefix)
+        self.register_routes_to_router(router, full_prefix)
 
         # 将路由器添加到应用中
         app.include_router(router)
@@ -312,13 +311,15 @@ class APIView:
 
         logger.debug(f"已注册视图 {self.__class__.__name__} 到路径前缀 '{full_prefix}'")
 
-    def _register_routes(self, router: APIRouter, prefix: str) -> None:
+    def register_routes_to_router(self, router: APIRouter, prefix: str) -> None:
         """
         注册路由到路由器
 
         Args:
             router: APIRouter实例
+            prefix: str - 路由前缀
         """
+        # pylint: disable=protected-access
         for route_info in self.__class__._routes:
             # 创建路由处理函数
             def create_endpoint(
@@ -373,3 +374,17 @@ class APIView:
             logger.debug(
                 f"已注册路由 {route_info['methods']} {route_path} -> {route_info['endpoint'].__name__}"
             )
+
+
+def setup_cbv(app: FastAPI, injector: Injector, prefix: str = ""):
+    """
+    设置基于类的视图
+
+    Args:
+        app: FastAPI
+        injector: Injector
+    """
+    for name in get_registered_modules():
+        obj = injector.get(name)
+        if isinstance(obj, APIView):
+            obj.register(app, prefix=prefix)

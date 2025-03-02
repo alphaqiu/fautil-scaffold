@@ -9,12 +9,14 @@ from typing import Optional
 from injector import Binder, Module, singleton
 from loguru import logger
 
+from src.core.setup import setup
 from src.dao.user_protocol import UserDaoProtocol
 from src.model.user import User, UserCreate
 
 
+@setup(protocol=UserDaoProtocol)
 @singleton
-class UserDao(UserDaoProtocol):
+class UserDao:
     """
     用户数据访问对象实现。
 

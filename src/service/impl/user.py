@@ -6,13 +6,15 @@ from typing import Optional
 
 from injector import Binder, Module, inject, singleton
 
+from src.core.setup import setup
 from src.dao.user_protocol import UserDaoProtocol
 from src.model.user import User, UserCreate
 from src.service.user_protocol import UserServiceProtocol
 
 
+@setup(protocol=UserServiceProtocol)
 @singleton
-class UserService(UserServiceProtocol):
+class UserService:
     """
     用户服务.
     """
