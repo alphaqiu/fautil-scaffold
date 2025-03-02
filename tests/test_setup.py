@@ -7,11 +7,10 @@
 """
 
 import importlib
-import os
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Type, runtime_checkable
+from typing import Any, Dict, Optional, Protocol, Type, runtime_checkable
 
 import pytest
 from injector import Injector
@@ -27,7 +26,6 @@ from src.core.setup import (
     _scan_module,
     _scan_package,
     get_all_bindings,
-    get_bindings_by_category,
     get_registered_modules,
     setup,
     setup_modules,
@@ -318,7 +316,7 @@ def test_get_registered_modules():
         # 模拟注册过程
         test_objects = _scan_module(module_name)
         module_class = _create_module_class(test_objects)
-        injector = Injector([module_class()])
+        _ = Injector([module_class()])
 
         # 获取注册的模块
         modules = get_registered_modules()
