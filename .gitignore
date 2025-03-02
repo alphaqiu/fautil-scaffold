@@ -171,3 +171,9 @@ myenv
 views/student_data_template
 views/scripts/
 views/system/temp_file
+.env
+.env.example
+config.example.yaml
+config.example.json
+
+!examples/.env.example
