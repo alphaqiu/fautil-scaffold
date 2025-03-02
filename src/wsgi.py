@@ -147,6 +147,7 @@ async def shutdown_app():
     logger.info("应用正在关闭...")
 
     # 1. 将应用标记为关闭状态，拒绝新的请求
+    # type: ignore global-statement
     global IS_SHUTTING_DOWN
     IS_SHUTTING_DOWN = True
 
@@ -203,75 +204,106 @@ async def lifespan(_: FastAPI):
     await shutdown_app()
 
 
-# 创建应用实例，使用lifespan上下文管理器
-app = FastAPI(
-    title="用户管理系统",
-    description="RESTful API 用户管理系统",
-    version="1.0.0",
-    lifespan=lifespan,
-)
-
-# 设置路由
-setup_cbv(app, setup_modules(), prefix="/api")
-
-# 添加CORS中间件
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.middleware("http")
-async def request_middleware(request: Request, call_next):
+def create_app(
+    use_lifespan: bool = True,
+    add_middlewares: bool = True,
+    app_title: str = "用户管理系统",
+    app_description: str = "RESTful API 用户管理系统",
+    app_version: str = "1.0.0",
+) -> FastAPI:
     """
-    请求中间件。
+    创建FastAPI应用实例。
 
-    1. 跟踪活跃请求数量
-    2. 在应用关闭时返回503状态码
-    3. 记录请求处理时间
+    根据参数决定是否应用生命周期管理器和中间件，便于在测试和生产环境使用不同的配置。
+
+    参数:
+        use_lifespan: 是否使用生命周期管理器
+        add_middlewares: 是否添加中间件
+        app_title: 应用标题
+        app_description: 应用描述
+        app_version: 应用版本
+
+    返回:
+        配置好的FastAPI应用实例
     """
-    global ACTIVE_REQUESTS
-    request_id = id(request)
-    start_time = time.time()
-
-    # 如果应用正在关闭，拒绝新的请求
-    if IS_SHUTTING_DOWN:
-        logger.warning(f"应用正在关闭，拒绝请求: {request.url}")
-
-        return JSONResponse(
-            status_code=503, content={"detail": "服务正在关闭，请稍后重试"}
-        )
-
-    # 增加活跃请求计数
-    ACTIVE_REQUESTS += 1
-    logger.debug(
-        f"请求开始 [{request_id}]: {request.method} {request.url.path} (活跃请求: {ACTIVE_REQUESTS})"
+    # 创建应用实例
+    app_instance = FastAPI(
+        title=app_title,
+        description=app_description,
+        version=app_version,
+        lifespan=lifespan if use_lifespan else None,
     )
 
-    try:
-        # 处理请求
-        response = await call_next(request)
-        process_time = time.time() - start_time
-        response.headers["X-Process-Time"] = str(process_time)
-        logger.debug(
-            f"请求完成 [{request_id}]: {request.method} "
-            f"{request.url.path} - {response.status_code} ({process_time:.4f}s)"
+    # 设置路由
+    setup_cbv(app_instance, setup_modules(), prefix="/api")
+
+    # 添加中间件
+    if add_middlewares:
+        # 添加CORS中间件
+        app_instance.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
-        return response
-    except Exception as e:
-        logger.error(
-            f"请求处理异常 [{request_id}]: {request.method} {request.url.path} - {str(e)}"
-        )
-        raise
-    finally:
-        # 减少活跃请求计数
-        ACTIVE_REQUESTS -= 1
+
+        # 添加请求跟踪中间件
+        @app_instance.middleware("http")
+        async def request_middleware(request: Request, call_next):
+            """
+            请求中间件。
+
+            1. 跟踪活跃请求数量
+            2. 在应用关闭时返回503状态码
+            3. 记录请求处理时间
+            """
+            global ACTIVE_REQUESTS
+            request_id = id(request)
+            start_time = time.time()
+
+            # 如果应用正在关闭，拒绝新的请求
+            if IS_SHUTTING_DOWN:
+                logger.warning(f"应用正在关闭，拒绝请求: {request.url}")
+
+                return JSONResponse(
+                    status_code=503, content={"detail": "服务正在关闭，请稍后重试"}
+                )
+
+            # 增加活跃请求计数
+            ACTIVE_REQUESTS += 1
+            logger.debug(
+                f"请求开始 [{request_id}]: {request.method} "
+                f"{request.url.path} (活跃请求: {ACTIVE_REQUESTS})"
+            )
+
+            try:
+                # 处理请求
+                response = await call_next(request)
+                process_time = time.time() - start_time
+                response.headers["X-Process-Time"] = str(process_time)
+                logger.debug(
+                    f"请求完成 [{request_id}]: {request.method} "
+                    f"{request.url.path} - {response.status_code} ({process_time:.4f}s)"
+                )
+                return response
+            except Exception as e:
+                logger.error(
+                    f"请求处理异常 [{request_id}]: {request.method} {request.url.path} - {str(e)}"
+                )
+                raise
+            finally:
+                # 减少活跃请求计数
+                ACTIVE_REQUESTS -= 1
+
+    return app_instance
 
 
-def handle_signals(sig, frame):
+# 创建默认应用实例（用于生产环境）
+app = create_app(use_lifespan=True, add_middlewares=True)
+
+
+def handle_signals(sig, frame):  # pylint: disable=unused-argument
     """
     处理停止信号。
 

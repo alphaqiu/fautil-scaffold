@@ -63,7 +63,7 @@ from loguru import logger
 T = TypeVar("T")
 
 
-def backoff_retry(
+def backoff_retry(  # pylint: disable=too-many-positional-arguments
     max_retries: int = 3,
     base_delay: float = 1.0,
     max_delay: float = 30.0,

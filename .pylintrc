@@ -22,7 +22,8 @@ extension-pkg-whitelist=pydantic
 disable=
     R0902, # too-many-instance-attributes
     R1735,  # use-dict-literal
-    R0903  # too-many-ancestors
+    R0903,  # too-many-ancestors
+    W0603,  # global-statement
 
 [FORMAT]
 # 最大行长度，超过此行长度将发出警告

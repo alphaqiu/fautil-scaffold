@@ -12,11 +12,27 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.wsgi import app
+from src.wsgi import create_app
 
 
 @pytest.fixture
-def client():
+def app():
+    """创建测试应用实例。
+
+    创建专用于测试的FastAPI实例，避免使用生产环境中的优雅停机机制。
+    """
+    # 创建一个测试专用的应用实例，不使用生命周期管理器和中间件
+    return create_app(
+        use_lifespan=False,  # 不使用生命周期管理器
+        add_middlewares=False,  # 不添加中间件
+        app_title="用户管理系统测试",
+        app_description="测试用户管理系统API",
+        app_version="测试版",
+    )
+
+
+@pytest.fixture
+def client(app):
     """创建测试客户端。"""
     return TestClient(app)
 
@@ -43,7 +59,7 @@ def test_user_crud_flow(client):
 
     # 2. 创建新用户
     new_user_data = {"name": "测试用户"}
-    response = client.post("/api/user/", json=new_user_data)
+    response = client.post("/api/user/create", json=new_user_data)
     assert response.status_code == 201
 
     # 3. 验证用户创建成功（检查用户列表长度增加）
@@ -61,7 +77,7 @@ def test_user_crud_flow(client):
     new_user_id = new_user["id"]
 
     # 4. 获取用户详情
-    response = client.get(f"/api/user/{new_user_id}")
+    response = client.get(f"/api/user/info/{new_user_id}")
     assert response.status_code == 200
     user_details = response.json()
     assert user_details["id"] == new_user_id
@@ -76,7 +92,7 @@ def test_user_crud_flow(client):
     assert updated_user["name"] == updated_user_data["name"]
 
     # 6. 验证用户更新成功（通过再次获取用户详情）
-    response = client.get(f"/api/user/{new_user_id}")
+    response = client.get(f"/api/user/info/{new_user_id}")
     assert response.status_code == 200
     user_details = response.json()
     assert user_details["name"] == updated_user_data["name"]
@@ -86,7 +102,7 @@ def test_user_crud_flow(client):
     assert response.status_code == 204
 
     # 8. 验证用户删除成功（检查用户不存在）
-    response = client.get(f"/api/user/{new_user_id}")
+    response = client.get(f"/api/user/info/{new_user_id}")
     assert response.status_code == 404
 
 
@@ -94,7 +110,7 @@ def test_get_nonexistent_user(client):
     """测试获取不存在的用户。"""
     # 使用一个不太可能存在的用户ID
     nonexistent_id = 9999
-    response = client.get(f"/api/user/{nonexistent_id}")
+    response = client.get(f"/api/user/info/{nonexistent_id}")
     assert response.status_code == 404
 
 
@@ -116,11 +132,11 @@ def test_delete_nonexistent_user(client):
 def test_create_user_validation(client):
     """测试创建用户时的数据验证。"""
     # 缺少必需字段的请求
-    response = client.post("/api/user/", json={})
+    response = client.post("/api/user/create", json={})
     assert response.status_code == 422
 
     # 包含额外字段的请求（应该被忽略）
     response = client.post(
-        "/api/user/", json={"name": "额外字段用户", "extra_field": "额外值"}
+        "/api/user/create", json={"name": "额外字段用户", "extra_field": "额外值"}
     )
     assert response.status_code == 201

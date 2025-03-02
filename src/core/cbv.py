@@ -407,7 +407,24 @@ def setup_cbv(app: FastAPI, injector: Injector, prefix: str = ""):
         injector = Injector([UserServiceModule(), UserControllerModule()])
         setup_cbv(app, injector, prefix="/api/v1")
     """
+    from typing import _ProtocolMeta  # 导入Protocol元类
+
     for name in get_registered_modules():
-        obj = injector.get(name)
-        if isinstance(obj, APIView):
-            obj.register(app, prefix=prefix)
+        # 跳过Protocol类型
+        if isinstance(name, _ProtocolMeta):
+            continue
+
+        # 检查类型是否为Protocol
+        if (
+            hasattr(name, "__module__")
+            and name.__module__ == "typing"
+            and hasattr(name, "_is_protocol")
+        ):
+            continue
+
+        try:
+            obj = injector.get(name)
+            if isinstance(obj, APIView):
+                obj.register(app, prefix=prefix)
+        except Exception as e:
+            logger.error(f"实例化 {name} 时出错: {e}")

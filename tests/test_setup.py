@@ -66,13 +66,13 @@ def custom_get_bindings_by_category(
 
 
 # 定义测试用的协议和实现类
+@pytest.mark.skip(reason="不是测试类，仅作为协议类使用")
 @runtime_checkable
 class TestServiceProtocol(Protocol):
     """测试用服务协议"""
 
     def process(self, data: str) -> str:
         """处理数据"""
-        ...
 
 
 @setup(protocol=TestServiceProtocol)
@@ -99,11 +99,13 @@ class BaseTestEntity:
     pass
 
 
+@pytest.mark.skip(reason="不是测试类，仅作为实体类使用")
 @setup()
 class TestEntity(BaseTestEntity):
     """测试实体类"""
 
-    def __init__(self):
+    def initialize(self):
+        """初始化方法（避免使用__init__）"""
         self.name = "TestEntity"
 
 
