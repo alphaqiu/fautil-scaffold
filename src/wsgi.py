@@ -24,16 +24,5 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def root():
-    """
-    根路径处理函数。
-
-    返回:
-        包含欢迎消息的字典
-    """
-    return {"message": "Hello World"}
-
-
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)

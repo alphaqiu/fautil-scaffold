@@ -38,7 +38,13 @@ class UserController(APIView):
         """
         self.user_service = user_service
 
-    @route("/", methods=["GET", "OPTIONS"], response_model=List[User])
+    @route(
+        "/",
+        methods=["GET"],
+        response_model=List[User],
+        summary="获取所有用户",
+        operation_id="list_users",
+    )
     async def list_users(self):
         """
         获取所有用户。
@@ -49,7 +55,14 @@ class UserController(APIView):
         logger.info("获取所有用户")
         return self.user_service.get_users()
 
-    @route("/", methods=["POST", "OPTIONS"], status_code=201, response_model=None)
+    @route(
+        "/",
+        methods=["POST", "OPTIONS"],
+        status_code=201,
+        response_model=None,
+        summary="创建新用户",
+        operation_id="create_user",
+    )
     async def create_user(self, user: UserCreate):
         """
         创建新用户。
@@ -63,7 +76,13 @@ class UserController(APIView):
         self.user_service.create_user(user)
         return None
 
-    @route("/{user_id}", methods=["GET", "OPTIONS"], response_model=User)
+    @route(
+        "/{user_id}",
+        methods=["GET"],
+        response_model=User,
+        summary="根据ID获取用户",
+        operation_id="get_user",
+    )
     async def get_user(self, user_id: int):
         """
         根据ID获取用户。
@@ -83,7 +102,13 @@ class UserController(APIView):
             raise HTTPException(status_code=404, detail="User not found")
         return user
 
-    @route("/{user_id}", methods=["PUT", "OPTIONS"], response_model=User)
+    @route(
+        "/{user_id}",
+        methods=["PUT"],
+        response_model=User,
+        summary="更新用户信息",
+        operation_id="update_user",
+    )
     async def update_user(self, user_id: int, user: UserCreate):
         """
         更新用户信息。
@@ -98,16 +123,22 @@ class UserController(APIView):
         异常:
             HTTPException: 如果用户不存在，返回404
         """
-        updated_user = self.user_service.update_user(user_id, user)
-        if updated_user is None:
+        try:
+            updated_user = self.user_service.update_user(user_id, user)
+            if updated_user is None:
+                raise HTTPException(status_code=404, detail="User not found")
+            return updated_user
+        except ValueError as e:
+            logger.warning(f"更新用户 {user_id} 失败: {str(e)}")
             raise HTTPException(status_code=404, detail="User not found")
-        return updated_user
 
     @route(
         "/{user_id}",
-        methods=["DELETE", "OPTIONS"],
+        methods=["DELETE"],
         status_code=204,
         response_model=None,
+        summary="删除用户",
+        operation_id="delete_user",
     )
     async def delete_user(self, user_id: int):
         """
