@@ -1,0 +1,133 @@
+# 应用示例配置文件
+# 将此文件复制到项目根目录、用户主目录下的.fautil目录或其他支持的位置
+# 文件名应为config.yaml或config.json
+
+# 应用基本配置
+app:
+  # 应用名称
+  title: "示例应用"
+  # 应用描述
+  description: "这是一个FastAPI应用示例"
+  # 应用版本
+  version: "1.0.0"
+  # 是否开启调试模式
+  debug: true
+  # 服务监听地址
+  host: "0.0.0.0"
+  # 服务监听端口
+  port: 8000
+  # 跨域来源设置
+  cors_origins:
+    - "http://localhost:3000"
+    - "https://example.com"
+  # 跨域允许凭证
+  cors_allow_credentials: true
+  # 跨域允许的方法
+  cors_allow_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+  # 跨域允许的请求头
+  cors_allow_headers:
+    - "Content-Type"
+    - "Authorization"
+  # JWT密钥
+  jwt_secret: "your-secret-key-please-change-in-production"
+  # JWT算法
+  jwt_algorithm: "HS256"
+  # JWT令牌过期时间（秒）
+  jwt_expires_seconds: 3600
+  # 日志级别
+  log_level: "INFO"
+
+# 数据库配置
+db:
+  # 数据库连接URL
+  url: "postgresql://username:password@localhost:5432/dbname"
+  # 是否回显SQL查询
+  echo: false
+  # 连接池大小
+  pool_size: 5
+  # 连接池最大溢出容量
+  max_overflow: 10
+  # 连接池回收时间（秒）
+  pool_recycle: 3600
+  # 连接池预检查
+  pool_pre_ping: true
+  # 数据库表前缀
+  table_prefix: ""
+
+# Redis配置
+redis:
+  # Redis连接URL
+  url: "redis://localhost:6379"
+  # Redis密码
+  password: null
+  # Redis数据库索引
+  db: 0
+  # 编码
+  encoding: "utf-8"
+  # 套接字超时（秒）
+  socket_timeout: 5
+  # 套接字连接超时（秒）
+  socket_connect_timeout: 5
+  # 超时重试
+  retry_on_timeout: true
+  # 最大连接数
+  max_connections: 10
+
+# Kafka配置
+kafka:
+  # Kafka服务器
+  bootstrap_servers: "localhost:9092"
+  # 客户端ID
+  client_id: "app-client"
+  # 消费者组ID
+  group_id: "app-group"
+  # 偏移量重置策略
+  auto_offset_reset: "earliest"
+  # 自动提交
+  enable_auto_commit: true
+  # 最大轮询记录数
+  max_poll_records: 500
+  # 会话超时（毫秒）
+  session_timeout_ms: 30000
+  # 心跳间隔（毫秒）
+  heartbeat_interval_ms: 10000
+  # 消费者超时（毫秒）
+  consumer_timeout_ms: 1000
+  # API版本
+  api_version: null
+
+# Minio（对象存储）配置
+minio:
+  # 存储端点
+  endpoint: "localhost:9000"
+  # 访问密钥
+  access_key: "minioadmin"
+  # 密钥
+  secret_key: "minioadmin"
+  # 是否使用安全连接（HTTPS）
+  secure: true
+  # 区域
+  region: null
+  # 默认存储桶
+  default_bucket: "default"
+
+# 日志配置
+log:
+  # 日志级别 (TRACE, DEBUG, INFO, SUCCESS, WARNING, ERROR, CRITICAL)
+  level: "INFO"
+  # 日志格式
+  format: "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+  # 日志文件路径
+  file_path: null
+  # 日志文件轮转设置
+  rotation: "20 MB"
+  # 日志保留时间
+  retention: "1 week"
+  # 日志压缩方式
+  compression: "zip"
+  # 是否序列化日志记录
+  serialize: false

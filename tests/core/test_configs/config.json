@@ -1,0 +1,17 @@
+{
+  "app": {
+    "title": "JSON文件中的应用",
+    "description": "测试配置",
+    "version": "0.1.0",
+    "port": 6000,
+    "jwt_secret": "json-jwt-secret"
+  },
+  "db": {
+    "url": "postgresql://user:pass@localhost:5432/db_json",
+    "echo": true
+  },
+  "log": {
+    "level": "DEBUG",
+    "file_path": "/tmp/app-json.log"
+  }
+}

@@ -1,0 +1,15 @@
+app:
+  title: YAML文件中的应用
+  description: 测试YAML配置
+  version: 0.2.0
+  port: 5000
+  jwt_secret: yaml-jwt-secret
+
+db:
+  url: postgresql://user:pass@localhost:5432/db_yaml
+  echo: false
+  pool_size: 10
+
+log:
+  level: INFO
+  file_path: /tmp/app-yaml.log

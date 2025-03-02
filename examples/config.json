@@ -1,0 +1,66 @@
+{
+  "app": {
+    "title": "JSON配置示例应用",
+    "description": "这是一个使用JSON配置的示例应用",
+    "version": "1.0.0",
+    "debug": false,
+    "host": "0.0.0.0",
+    "port": 8000,
+    "cors_origins": ["http://localhost:3000", "https://example.com"],
+    "cors_allow_credentials": true,
+    "cors_allow_methods": ["GET", "POST", "PUT", "DELETE"],
+    "cors_allow_headers": ["Content-Type", "Authorization"],
+    "jwt_secret": "your-secret-key-please-change-in-production",
+    "jwt_algorithm": "HS256",
+    "jwt_expires_seconds": 3600,
+    "log_level": "INFO"
+  },
+  "db": {
+    "url": "postgresql://username:password@localhost:5432/dbname",
+    "echo": false,
+    "pool_size": 5,
+    "max_overflow": 10,
+    "pool_recycle": 3600,
+    "pool_pre_ping": true,
+    "table_prefix": ""
+  },
+  "redis": {
+    "url": "redis://localhost:6379",
+    "password": null,
+    "db": 0,
+    "encoding": "utf-8",
+    "socket_timeout": 5,
+    "socket_connect_timeout": 5,
+    "retry_on_timeout": true,
+    "max_connections": 10
+  },
+  "kafka": {
+    "bootstrap_servers": "localhost:9092",
+    "client_id": "app-client",
+    "group_id": "app-group",
+    "auto_offset_reset": "earliest",
+    "enable_auto_commit": true,
+    "max_poll_records": 500,
+    "session_timeout_ms": 30000,
+    "heartbeat_interval_ms": 10000,
+    "consumer_timeout_ms": 1000,
+    "api_version": null
+  },
+  "minio": {
+    "endpoint": "localhost:9000",
+    "access_key": "minioadmin",
+    "secret_key": "minioadmin",
+    "secure": true,
+    "region": null,
+    "default_bucket": "default"
+  },
+  "log": {
+    "level": "INFO",
+    "format": "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    "file_path": null,
+    "rotation": "20 MB",
+    "retention": "1 week",
+    "compression": "zip",
+    "serialize": false
+  }
+}

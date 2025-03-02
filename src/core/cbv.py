@@ -378,11 +378,34 @@ class APIView:
 
 def setup_cbv(app: FastAPI, injector: Injector, prefix: str = ""):
     """
-    设置基于类的视图
+    设置基于类的视图CBV: Class - Based Views（基于类的视图）
 
     Args:
         app: FastAPI
+            FastAPI应用实例
         injector: Injector
+            依赖注入器容器实例
+        prefix: str
+            路由前缀，默认为空字符串
+
+    示例：
+    ::
+
+        from fastapi import FastAPI
+        from fautil.core import setup_cbv
+
+        app = FastAPI()
+
+        class UserServiceModule(Module):
+            def configure(self, binder: Binder) -> None:
+                binder.bind(UserServiceProtocol, to=UserService, scope=singleton)
+
+        class UserControllerModule(Module):
+            def configure(self, binder: Binder) -> None:
+                binder.bind(UserController, scope=singleton)
+
+        injector = Injector([UserServiceModule(), UserControllerModule()])
+        setup_cbv(app, injector, prefix="/api/v1")
     """
     for name in get_registered_modules():
         obj = injector.get(name)
